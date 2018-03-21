@@ -1,6 +1,15 @@
 <template>
     <div class="dropdown" :class="{'open' : open}">
-        <input type="text" v-model="searchText" @input="searchChanged" @keydown.down="down" @keydown.up="up" @keydown.enter="suggestionSelected(matches[highlightIndex])"/>
+        <input type="text" v-model="searchText" 
+            ref="searchText"
+            :placeholder="placeholder"
+            @input="searchChanged" 
+            @keydown.down="down" 
+            @keydown.up="up" 
+            @keydown.enter="suggestionSelected(matches[highlightIndex])" 
+            @keydown.esc="setOpen(false)" 
+            @blur="setOpen(false)"
+        />
         <a class="toggle" @mousedown.prevent @click="setOpen(!open)">
             <span class="arrow-up">▲</span>
             <span class="arrow-down">▼</span>
@@ -15,7 +24,17 @@
 
 <script>
     export default {
-        props: ['options'],
+        props: {
+            value: null,
+            options: {
+                type: Object,
+                required: true
+            },
+            placeholder: {
+                type: String,
+                default: 'Enter an item name to search'
+            }
+        },
         data() {
             return {
                 searchText: '',
@@ -27,6 +46,10 @@
         methods: {
             setOpen(isOpen) {
                 this.open = isOpen
+    
+                if (this.open) {
+                    this.$refs.searchText.focus()
+                }
             },
             suggestionSelected(suggestion) {
                 this.open = false
